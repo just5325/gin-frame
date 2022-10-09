@@ -1,0 +1,7 @@
+# IDEA的索引目录
+.idea/
+# GIT本地仓库
+.git/
+# 编译后的二进制文件
+main
+main.exe
