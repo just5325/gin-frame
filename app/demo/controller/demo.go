@@ -7,6 +7,7 @@ package controller
 
 import (
 	"gin-frame/app/demo/service"
+	"gin-frame/config"
 	"gin-frame/utility/response"
 	"gin-frame/utility/response/response_code"
 	"github.com/gin-gonic/gin"
@@ -37,5 +38,13 @@ func (c *demoController) Shutdown(ctx *gin.Context) {
 	time.Sleep(time.Duration(8) * time.Second)
 	// 返回数据
 	response.Response(ctx).SusJson(nil)
+	return
+}
+
+// Config 读取配置文件
+// 简单的读取一个配置文件即可
+func (c *demoController) Config(ctx *gin.Context) {
+	// 返回数据
+	response.Response(ctx).SusJson(config.Config().GetViper().AllSettings())
 	return
 }

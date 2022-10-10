@@ -17,4 +17,6 @@ func InitRouter(group *gin.RouterGroup) {
 	baseRouterGroup.POST("/demo/index", controller.Demo.Index)
 	// 测试优雅关机
 	baseRouterGroup.POST("/demo/shutdown", controller.Demo.Shutdown)
+	// 读取配置文件
+	baseRouterGroup.POST("/demo/config", controller.Demo.Config)
 }
