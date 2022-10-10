@@ -10,6 +10,7 @@ import (
 	"gin-frame/utility/response"
 	"gin-frame/utility/response/response_code"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 var Demo = demoController{}
@@ -26,5 +27,15 @@ func (c *demoController) Index(ctx *gin.Context) {
 	}
 
 	response.Response(ctx).SusJson(res)
+	return
+}
+
+// Shutdown 测试优雅关机
+// 本方法会延迟8秒后返回结果,请求完本接口后,关闭本服务测试是否能请求完毕后优雅关机
+func (c *demoController) Shutdown(ctx *gin.Context) {
+	// 睡眠8秒
+	time.Sleep(time.Duration(8) * time.Second)
+	// 返回数据
+	response.Response(ctx).SusJson(nil)
 	return
 }

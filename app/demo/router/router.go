@@ -15,4 +15,6 @@ func InitRouter(group *gin.RouterGroup) {
 	baseRouterGroup := group.Group("/demo")
 	// 注册一个接口路由
 	baseRouterGroup.POST("/demo/index", controller.Demo.Index)
+	// 测试优雅关机
+	baseRouterGroup.POST("/demo/shutdown", controller.Demo.Shutdown)
 }
