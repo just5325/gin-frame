@@ -5,3 +5,5 @@
 # 编译后的二进制文件
 main
 main.exe
+# air 热重载临时文件目录
+tmp/
