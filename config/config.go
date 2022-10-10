@@ -18,7 +18,7 @@ import (
 var configs *viper.Viper
 
 // 配置文件路径
-var configFile = "./config/config.json"
+var configFile = "./config/config.yml"
 
 // 包初始化()
 func init() {
@@ -42,8 +42,7 @@ func initConfigs() (configs *viper.Viper) {
 	}
 
 	// 导入配置文件
-	viper.SetConfigType("json")
-	viper.SetConfigFile("./config/config.json")
+	viper.SetConfigFile(configFile)
 
 	// 读取配置文件
 	err := viper.ReadInConfig()

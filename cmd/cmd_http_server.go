@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"gin-frame/config"
 	"gin-frame/router"
 	"log"
 	"net/http"
@@ -16,7 +17,7 @@ func httpServer() {
 
 	// 下面代码来自于gin官网:https://gin-gonic.com/zh-cn/docs/examples/graceful-restart-or-stop/
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + config.Config().GetViper().GetString("http_server.port"),
 		Handler: r,
 	}
 	go func() {
