@@ -1,6 +1,9 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-contrib/requestid"
+	"github.com/gin-gonic/gin"
+)
 import demoRouter "gin-frame/app/demo/router"
 
 func InitRouter() (r *gin.Engine) {
@@ -14,6 +17,9 @@ func InitRouter() (r *gin.Engine) {
 
 	// Recovery 中间件会 recover 任何 panic。如果有 panic 的话，会写入 500。
 	r.Use(gin.Recovery())
+
+	// Gin框架的请求ID中间件。使用X-Request-ID报头向响应添加标识符。如果X-Request-ID值在请求头中发送，则将其传递回调用方
+	r.Use(requestid.New())
 
 	// 绑定favicon.ico路由
 	r.GET("/favicon.ico", func(ctx *gin.Context) {
