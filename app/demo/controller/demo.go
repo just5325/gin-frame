@@ -8,9 +8,11 @@ package controller
 import (
 	"gin-frame/app/demo/service"
 	"gin-frame/config"
+	"gin-frame/utility/log"
 	"gin-frame/utility/response"
 	"gin-frame/utility/response/response_code"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -46,5 +48,15 @@ func (c *demoController) Shutdown(ctx *gin.Context) {
 func (c *demoController) Config(ctx *gin.Context) {
 	// 返回数据
 	response.Response(ctx).SusJson(config.Config().GetViper().AllSettings())
+	return
+}
+
+// Log 记录日志
+func (c *demoController) Log(ctx *gin.Context) {
+	// 仅仅演示一下怎么记录日志而已
+	log.Logger().Log(ctx, logrus.Fields{
+		"a": 1,
+		"b": 2,
+	})
 	return
 }

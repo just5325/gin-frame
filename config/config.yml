@@ -2,3 +2,8 @@
 "http_server":
     # 端口
     "port": "8080"
+
+# 日志配置
+log:
+    # 日志文件目录
+    log_dir: "./resource/logs"

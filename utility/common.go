@@ -17,6 +17,10 @@ type ICommon interface {
 	FmtPrint(data interface{})
 	// FileIsExisted 文件或文件夹是否存在
 	FileIsExisted(filename string) bool
+	// MkDir 新建文件夹
+	MkDir(src string) error
+	// IsNotExistMkDir 检查文件夹是否存在，如果不存在则新建文件夹
+	IsNotExistMkDir(src string) error
 }
 
 // 声明结构体类型
@@ -41,4 +45,25 @@ func (s *commonImpl) FileIsExisted(filename string) bool {
 		existed = false
 	}
 	return existed
+}
+
+// MkDir 新建文件夹
+func (s *commonImpl) MkDir(src string) error {
+	err := os.MkdirAll(src, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IsNotExistMkDir 检查文件夹是否存在，如果不存在则新建文件夹
+func (s *commonImpl) IsNotExistMkDir(src string) error {
+	if exist := s.FileIsExisted(src); exist == false {
+		if err := s.MkDir(src); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

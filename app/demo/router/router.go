@@ -19,4 +19,6 @@ func InitRouter(group *gin.RouterGroup) {
 	baseRouterGroup.POST("/demo/shutdown", controller.Demo.Shutdown)
 	// 读取配置文件
 	baseRouterGroup.POST("/demo/config", controller.Demo.Config)
+	// 记录日志
+	baseRouterGroup.POST("/demo/log", controller.Demo.Log)
 }
