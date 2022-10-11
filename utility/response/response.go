@@ -5,6 +5,7 @@
 package response
 
 import (
+	"bytes"
 	"gin-frame/utility/response/response_code"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -46,4 +47,19 @@ func (s *responseImpl) SusJson(data interface{}) {
 // FailJson 失败返回json
 func (s *responseImpl) FailJson(data interface{}) {
 	s.Json(response_code.Error.Code, response_code.Error.Message, data)
+}
+
+type CustomResponseWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (w CustomResponseWriter) Write(b []byte) (int, error) {
+	w.body.Write(b)
+	return w.ResponseWriter.Write(b)
+}
+
+func (w CustomResponseWriter) WriteString(s string) (int, error) {
+	w.body.WriteString(s)
+	return w.ResponseWriter.WriteString(s)
 }

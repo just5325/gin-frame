@@ -88,7 +88,7 @@ func (s *loggerImpl) GetLogger() *logrus.Logger {
 
 // Log 记录日志
 func (s *loggerImpl) Log(ctx *gin.Context, fields logrus.Fields) {
-	// 增加 请求ID (整个HTTP请求生命周期内,记录的日志 request_id 都是相同的)
+	// 请求ID (整个HTTP请求生命周期内,记录的日志 request_id 都是相同的)
 	fields["request_id"] = requestid.Get(ctx)
 	Logger().GetLogger().WithFields(fields).Info()
 }

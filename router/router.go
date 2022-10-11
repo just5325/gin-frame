@@ -1,6 +1,7 @@
 package router
 
 import (
+	"gin-frame/middleware"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +28,11 @@ func InitRouter() (r *gin.Engine) {
 	})
 
 	// base路由分组
-	baseRouterGroup := r.RouterGroup.Group("/api/v1")
+	baseRouterGroup := r.RouterGroup.Group(
+		"/api/v1",
+		// 中间件: api请求日志
+		middleware.ApiLog().Handler,
+	)
 
 	// 绑定 demo模块路由 到 base路由分组
 	demoRouter.InitRouter(baseRouterGroup)
