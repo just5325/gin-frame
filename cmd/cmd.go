@@ -2,34 +2,23 @@ package cmd
 
 import (
 	"gin-frame/utility/log"
-	"os"
-	"os/signal"
 )
 
 // Execute 执行命令行命令
 func Execute() {
-	// 创建一个通道接收错误(有错误就会close(stop))
-	done := make(chan error, 1)
-	// 创建一个通道管理停止服务的信号(所有服务接收stop的数据后就可以停止服务了)
-	stop := make(chan interface{})
-
-	// 创建一个通道,等待系统中断信号以优雅地关闭服务器
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
-	go func() {
-		// 接收quit，没有数据，或者没有close的话会一直堵塞在这里
-		<-quit
-		// 停止服务的信号
-		stop <- true
-	}()
+	// 创建一个通道管理主协程的生命周期, mainStop接收到错误信息时,结束协程
+	var mainStop = make(chan error, 1)
+	// 创建一个通道管理子协程httpServer的生命周期, httpServerStop接收到错误消息时,结束协程
+	var httpServerStop = make(chan error)
 
 	// 启动 http server
 	go func() {
-		httpServer(stop, done)
+		httpServer(httpServerStop, mainStop)
 	}()
 
-	if err := <-done; err != nil {
+	// 等待mainStop写入错误信息, 未写入错误信息时阻塞主协程
+	if err := <-mainStop; err != nil {
 		log.Logger().GetLogger().Errorf("main err %+v", err)
-		close(stop)
+		close(httpServerStop)
 	}
 }
