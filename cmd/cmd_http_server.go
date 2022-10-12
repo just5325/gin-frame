@@ -2,41 +2,40 @@ package cmd
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"gin-frame/config"
 	"gin-frame/router"
-	"log"
 	"net/http"
-	"os"
-	"os/signal"
 	"time"
 )
 
-func httpServer() {
+func httpServer(stop <-chan interface{}, done chan<- error) {
 	// 实例化路由
 	r := router.InitRouter()
 
-	// 下面代码来自于gin官网:https://gin-gonic.com/zh-cn/docs/examples/graceful-restart-or-stop/
-	srv := &http.Server{
+	// 定义http.Server
+	s := &http.Server{
 		Addr:    ":" + config.Config().GetViper().GetString("http_server.port"),
 		Handler: r,
 	}
+	// 启动服务监听
 	go func() {
 		// 服务连接
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			// 向通道中写入错误信息
+			done <- errors.New(fmt.Sprintf("listen: %s\n", err))
 		}
 	}()
 
-	// 等待中断信号以优雅地关闭服务器（设置 10 秒的超时时间）
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-	log.Println("Shutdown Server ...")
-
+	// 接收stop，一旦通道中有数据了，或者close(stop)的话就会向下执行了,否则会一直阻塞在这里...
+	<-stop
+	// 优雅地关闭服务器（设置 10 秒的超时时间）
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+	// 关闭上下文环境中所有的协程
+	if err := s.Shutdown(ctx); err != nil {
+		// 向通道中写入错误信息
+		done <- errors.New(fmt.Sprintf("Server Shutdown:%s\n", err))
 	}
-	log.Println("Server exiting")
 }
