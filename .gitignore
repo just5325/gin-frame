@@ -9,3 +9,5 @@ main.exe
 tmp/
 # 日志
 resource/logs/
+# 项目唯一的配置文件
+config/config.yml
