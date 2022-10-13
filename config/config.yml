@@ -7,3 +7,24 @@
 log:
     # 日志文件目录
     log_dir: "./resource/logs"
+
+# 数据库配置
+database:
+    # 成都 数据库
+    cd:
+        host: "47.111.242.7"
+        port: "7201"
+        user: "root"
+        passwd: "ioha987y9njad"
+        dbname: "demo1"
+        max_open_cons: 5
+        max_idle_cons: 5
+   # 重庆 数据库
+    cq:
+        host: "47.111.242.7"
+        port: "7201"
+        user: "root"
+        passwd: "ioha987y9njad"
+        dbname: "demo2"
+        max_open_cons: 5
+        max_idle_cons: 5

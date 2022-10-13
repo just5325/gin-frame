@@ -21,6 +21,20 @@ import (
 // 声明一个变量,用于存储 *logrus.Logger
 var logger *logrus.Logger
 
+// MyWriter 实现 logger 的interface{}
+type MyWriter struct {
+	mlog *logrus.Logger
+}
+
+func (m *MyWriter) Printf(format string, v ...interface{}) {
+	logStr := fmt.Sprintf(format, v...)
+	m.mlog.Info(logStr)
+}
+
+func NewMyWriter() *MyWriter {
+	return &MyWriter{mlog: logger}
+}
+
 // 包初始化
 func init() {
 
