@@ -7,9 +7,9 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"gin-frame/utility"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"sync"
 )

@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"gin-frame/config"
 	"gin-frame/router"
+	"github.com/pkg/errors"
 	"net/http"
 	"os"
 	"os/signal"
