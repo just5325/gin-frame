@@ -7,16 +7,25 @@
 # 日志配置
 log:
     # 日志文件的软链接路径(程序根目录的相对路径,默认配置:"resource/logs/log.log")
-    link_path: ""
+    link_path: "resource/logs/log.log"
     # 日志切割生成的日志文件路径(程序根目录的相对路径,默认配置:"resource/logs/log/%Y%m%d%H.log")
-    file_path: ""
+    file_path: "resource/logs/log/%Y%m%d%H.log"
     # 日志文件最大保存天数(默认配置:30)
-    with_max_age:
+    with_max_age: 30
     # 日志切割时间间隔(默认配置:1)
-    with_rotation_time: 
+    with_rotation_time: 1
 
 # 数据库配置
 database:
+    # 默认 数据库
+    default:
+        host: "47.111.242.7"
+        port: "7201"
+        user: "root"
+        passwd: "ioha987y9njad"
+        dbname: "demo1"
+        max_open_cons: 5
+        max_idle_cons: 5
     # 成都 数据库
     cd:
         host: "127.0.0.1"
