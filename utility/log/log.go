@@ -6,20 +6,34 @@
 package log
 
 import (
+	"bufio"
 	"fmt"
 	"gin-frame/config"
-	"gin-frame/utility"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/cast"
 	"os"
+	"path"
 	"sync"
 	"time"
 )
 
 // 声明一个变量,用于存储 *logrus.Logger
 var logger *logrus.Logger
+
+// 默认日志文件的软链接路径(程序根目录的相对路径)
+var linkPath = "resource/logs/log.log"
+
+// 默认日志切割生成的日志文件路径(程序根目录的相对路径)
+var filePath = "resource/logs/log/%Y%m%d%H.log"
+
+// 默认日志文件最大保存天数
+var withMaxAge = 30
+
+// 默认日志切割时间间隔(单位小时)(隔多久分割一次)
+var withRotationTime = 1
 
 // MyWriter 实现 logger 的interface{}
 type MyWriter struct {
@@ -50,17 +64,15 @@ func init() {
 }
 
 func initLogger() {
-	// 获取配置的日志文件目录
-	logDir := config.Config().GetViper().GetString("log.log_dir")
-	// 日志文件目录拼接年月作为二级目录
-	logDir += fmt.Sprintf("/%d-%d", time.Now().Year(), cast.ToInt(time.Now().Format("01")))
-	// 日志文件
-	logFile := fmt.Sprintf("%s/%d.log", logDir, time.Now().Day())
-	// 检查文件夹是否存在，如果不存在则新建文件夹
-	err := utility.Common().IsNotExistMkDir(logDir)
+	// Logger.Out = os.Stdout
+	src, err := os.OpenFile(os.DevNull, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		panic(err)
 	}
+
+	writer := bufio.NewWriter(src)
+
+	logger.Out = writer // config.GetLogConfig().FilePath
 
 	//设置日志级别
 	logger.SetLevel(logrus.InfoLevel)
@@ -70,13 +82,56 @@ func initLogger() {
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
 
-	// 可以设置像文件等任意`io.Writer`类型作为日志输出
-	file, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		logger.Out = file
+	// 获取当前程序的根目录(绝对路径)
+	pwd, _ := os.Getwd()
+
+	// 获取配置日志文件的软链接路径
+	if config.Config().GetViper().GetString("log.link_path") != "" {
+		linkPath = path.Join(pwd, config.Config().GetViper().GetString("log.link_path"))
 	} else {
-		logger.Info("Failed to log to file, using default stderr")
+		linkPath = path.Join(pwd, linkPath)
 	}
+
+	// 获取配置日志切割生成的路径
+	if config.Config().GetViper().GetString("log.file_path") != "" {
+		filePath = path.Join(pwd, config.Config().GetViper().GetString("log.file_path"))
+	} else {
+		filePath = path.Join(pwd, filePath)
+	}
+
+	// 获取配置日志文件最大保存天数
+	if config.Config().GetViper().GetInt("log.with_max_age") > 0 {
+		withMaxAge = config.Config().GetViper().GetInt("log.with_max_age")
+	}
+	// 获取配置日志切割时间间隔
+	if config.Config().GetViper().GetInt("log.with_rotation_time") > 0 {
+		withRotationTime = config.Config().GetViper().GetInt("log.with_rotation_time")
+	}
+
+	logWriter, _ := rotatelogs.New(
+		filePath,
+		// 生成软链 指向最新的日志文件 - window 下使用要开启开发者模式
+		rotatelogs.WithLinkName(linkPath),
+		// 文件最大保存时间
+		rotatelogs.WithMaxAge(time.Duration(withMaxAge*24)*time.Hour),
+		// 设置日志切割时间间隔(1小时)(隔多久分割一次)
+		rotatelogs.WithRotationTime(time.Duration(withRotationTime)*time.Hour),
+	)
+
+	writeMap := lfshook.WriterMap{
+		logrus.InfoLevel:  logWriter,
+		logrus.FatalLevel: logWriter,
+		logrus.DebugLevel: logWriter,
+		logrus.WarnLevel:  logWriter,
+		logrus.ErrorLevel: logWriter,
+		logrus.PanicLevel: logWriter,
+	}
+
+	Hook := lfshook.NewHook(writeMap, &logrus.JSONFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+
+	logger.AddHook(Hook)
 }
 
 // ILogger 声明接口类型
