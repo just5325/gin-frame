@@ -44,3 +44,35 @@ database:
         dbname: "demo2"
         max_open_cons: 5
         max_idle_cons: 5
+
+# gorm_gen gorm.io/gen 相关配置
+gorm_gen:
+    # start 开关 (true:随着主协程启动时完成生成模型的操作 (默认)false:不执行)
+    start: true
+
+    # gorm_gen_config 本配置项可直接参考 https://pkg.go.dev/gorm.io/gen#Config
+    gorm_gen_config:
+        # out_path 指定查询代码路径 (默认:"dao/query")
+        out_path: "dao/query"
+        # model_pkg_path 指定模型代码路径 (默认:"dao/model")
+        model_pkg_path: "dao/model"
+        # with_unit_test 为查询代码生成单元测试 (默认:false)
+        with_unit_test: false
+
+    # gen_model 生成模型配置
+    # gen_model 这里是配置的一个数组,数组由 database 和 table 字段构成, 可以配置多个不同数据库和表进行生成 gorm 模型
+    gen_model:
+        -
+            # database 数据库（如：”default“，表示使用本配置文件中 database.default 数据库）
+            database: "default"
+            # table 表名称
+            table: ["user", "user2", "user3"]
+            # gorm_gen_config 本配置项可覆盖 gorm_gen.gorm_gen_config 的配置(主要是为了可以配置不同的应用模块生成 gorm 模型到应用模块的目录下)
+            gorm_gen_config:
+                out_path: "app/demo/dao/query"
+                model_pkg_path: "app/demo/dao/model"
+                with_unit_test: true
+        -
+            # 成都 数据库的生成 gorm 模型配置
+            database: "cd"
+            table: [ "user4" ]

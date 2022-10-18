@@ -1,8 +1,10 @@
 package main
 
-import "gin-frame/cmd"
+import (
+	"gin-frame/cmd"
+	_ "gin-frame/cmd/cmd_gorm_gen"
+)
 
 func main() {
-	// 执行命令行命令
 	cmd.Execute()
 }
