@@ -16,7 +16,7 @@ type demoCurdValidatorCreate struct {
 }
 
 // Create 为路由 /api/v1/demo/demo_curd/create 设置的接口参数验证方法
-func (c *demoCurdValidator) Create(ctx *gin.Context) {
-	var data demoCurdValidatorCreate
+func (c *demoCurdValidator) Create(ctx *gin.Context) (data demoCurdValidatorCreate) {
 	utilityValidator.Validator(ctx).Struct(&data)
+	return data
 }
