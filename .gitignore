@@ -11,3 +11,8 @@ tmp/
 resource/logs/
 # 项目唯一的配置文件
 config/config.yml
+# gorm.io/gen 自动生成的 数据库模型 文件
+#dao/query/
+#dao/model/
+#app/demo/dao/query/
+#app/demo/dao/model/

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// demo 控制器相关路由注册
 func demoRouter(group *gin.RouterGroup) {
 	// 注册一个接口路由
 	group.POST("/demo/index", controller.Demo.Index)

@@ -29,6 +29,8 @@ type ICommon interface {
 	IsNotExistMkDir(src string) error
 	// RequestInputs 获取所有请求参数
 	RequestInputs(c *gin.Context) (map[string]interface{}, error)
+	// ShouldBind 绑定参数(官方的c.ShouldBind使用一次后,再次获取c.Request.Body的数据时会报错EOF,所以这里取了数据后重新写回c.Request.Body)
+	ShouldBind(c *gin.Context, rule any)
 }
 
 // 声明结构体类型
@@ -154,4 +156,14 @@ func (s *commonImpl) RequestInputs(c *gin.Context) (map[string]interface{}, erro
 	}
 
 	return dataMap, nil
+}
+
+// ShouldBind 绑定参数(官方的c.ShouldBind使用一次后,再次获取c.Request.Body的数据时会报错EOF,所以这里取了数据后重新写回c.Request.Body)
+func (s *commonImpl) ShouldBind(c *gin.Context, rule any) {
+	bodyBytes, _ := c.GetRawData()
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	_ = c.ShouldBind(&rule)
+
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 }

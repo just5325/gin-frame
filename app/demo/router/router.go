@@ -14,4 +14,6 @@ func InitRouter(group *gin.RouterGroup) {
 	baseRouterGroup := group.Group("/demo")
 	// demo 控制器相关路由注册
 	demoRouter(baseRouterGroup)
+	// demo_curd 控制器相关路由注册
+	demoCurdRouter(baseRouterGroup)
 }
