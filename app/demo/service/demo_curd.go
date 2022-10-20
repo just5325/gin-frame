@@ -34,6 +34,16 @@ func DemoCurd(ctx *gin.Context) IDemoCurd {
 
 // Create 数据库create操作
 func (s *demoCurdImpl) Create(username string, password string) (res gin.H, err error) {
+	// CheckUsernameExist 判断指定用户名是否存在
+	checkUsernameExist, err := s.CheckUsernameExist(username)
+	if err != nil {
+		return
+	}
+	if checkUsernameExist {
+		err = errors.New("用户名已存在")
+		return
+	}
+
 	defaultDb, err := db.Db().GetDb("default")
 	if err != nil {
 		return
