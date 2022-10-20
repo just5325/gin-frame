@@ -16,6 +16,7 @@ type IResponse interface {
 	Json(code int, msg string, data interface{})
 	SusJson(data interface{})
 	FailJson(data interface{})
+	ErrIsNil(err error)
 }
 
 // 声明结构体类型
@@ -47,6 +48,13 @@ func (s *responseImpl) SusJson(data interface{}) {
 // FailJson 失败返回json
 func (s *responseImpl) FailJson(data interface{}) {
 	s.Json(response_code.Error.Code, response_code.Error.Message, data)
+}
+
+// ErrIsNil 通用快捷检查err不为nil时返回json
+func (s *responseImpl) ErrIsNil(err error) {
+	if err != nil {
+		s.Json(response_code.Error.Code, err.Error(), nil)
+	}
 }
 
 type CustomResponseWriter struct {

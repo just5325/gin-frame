@@ -1,4 +1,4 @@
-// 验证器
+// 验证器验证方法
 // 创建人： 黄翠刚
 // 创建时间： 2022.10.19
 // 使用示例:
@@ -33,13 +33,23 @@ func Validator(ctx *gin.Context) IValidator {
 	}
 }
 
+// Translate 检验并返回检验错误信息
+func (s *validatorImpl) Translate(err error) (errMsg string) {
+	errs := err.(ginValidator.ValidationErrors)
+	for _, err := range errs {
+		errMsg = err.Translate(trans)
+	}
+	return
+}
+
 // Struct 结构体验证
 func (s *validatorImpl) Struct(v interface{}) {
 	utility.Common().ShouldBind(s.ctx, v)
-	if err := GinValidate.Struct(v); err != nil {
+	if err := ginValidate.Struct(v); err != nil {
 		response.Response(s.ctx).Json(response_code.Error.Code, s.getValidMsg(err, v), nil)
 		s.ctx.Abort()
 	}
+	return
 }
 
 // 获取验证错误信息
@@ -54,7 +64,7 @@ func (s *validatorImpl) getValidMsg(err error, obj interface{}) string {
 				msg = f.Tag.Get("validateMsg")
 				// 如果没有用户自定义错误提示信息,就使用验证器的错误信息
 				if msg == "" {
-					msg = Translate(err)
+					msg = s.Translate(err)
 				}
 				// 错误信息不需要全部返回，当找到第一个错误的信息时，就可以结束
 				break

@@ -5,13 +5,19 @@ import (
 	"gin-frame/app/demo/dao/query"
 	"gin-frame/dao/db"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"time"
 )
 
 // IDemoCurd 声明接口类型
 type IDemoCurd interface {
+	// Create 数据库create操作
 	Create(username string, password string) (res gin.H, err error)
+	// Update 数据库update操作
+	Update(username string, password string) (err error)
+	// CheckUsernameExist 判断指定用户名是否存在
+	CheckUsernameExist(username string) (res bool, err error)
 }
 
 // 声明结构体类型
@@ -26,7 +32,7 @@ func DemoCurd(ctx *gin.Context) IDemoCurd {
 	}
 }
 
-// Create 方法
+// Create 数据库create操作
 func (s *demoCurdImpl) Create(username string, password string) (res gin.H, err error) {
 	defaultDb, err := db.Db().GetDb("default")
 	if err != nil {
@@ -63,5 +69,53 @@ func (s *demoCurdImpl) Create(username string, password string) (res gin.H, err 
 	res = gin.H{
 		"id": cast.ToInt(modelUser.ID),
 	}
+	return
+}
+
+// Update 数据库update操作
+func (s *demoCurdImpl) Update(username string, password string) (err error) {
+	// CheckUsernameExist 判断指定用户名是否存在
+	checkUsernameExist, err := s.CheckUsernameExist(username)
+	if err != nil {
+		return
+	}
+	if !checkUsernameExist {
+		err = errors.New("用户名不存在")
+		return
+	}
+
+	defaultDb, err := db.Db().GetDb("default")
+	if err != nil {
+		return
+	}
+	u := query.Use(defaultDb).User
+
+	//// 更新单个字段
+	//_, err = u.Where(u.Username.Eq(username)).Update(u.Password, password)
+
+	// 更新多个字段
+	//_, err = u.Where(u.Username.Eq(username)).Updates(map[string]interface{}{"password": password, "state": 1})
+	_, err = u.Where(u.Username.Eq(username)).Updates(model.User{Password: password, State: 1})
+
+	return
+}
+
+// CheckUsernameExist 判断指定用户名是否存在
+func (s *demoCurdImpl) CheckUsernameExist(username string) (res bool, err error) {
+	defaultDb, err := db.Db().GetDb("default")
+	if err != nil {
+		return
+	}
+
+	u := query.Use(defaultDb).User
+	count, err := u.Where(u.Username.Eq(username)).Count()
+	if err != nil {
+		return
+	}
+
+	if count >= 1 {
+		res = true
+	}
+
 	return
 }
