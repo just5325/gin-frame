@@ -16,4 +16,6 @@ func InitRouter(group *gin.RouterGroup) {
 	demoRouter(baseRouterGroup)
 	// demo_curd 控制器相关路由注册
 	demoCurdRouter(baseRouterGroup)
+	// redis 控制器相关路由注册
+	redisRouter(baseRouterGroup)
 }

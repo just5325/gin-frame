@@ -43,6 +43,7 @@
 日志: github.com/sirupsen/logrus
 日志分割: github.com/lestrrat-go/file-rotatelogs + github.com/rifflock/lfshook
 全局请求ID中间件: github.com/gin-contrib/requestid
+Redis缓存: github.com/go-redis/redis/v9
 ```
 
 ### 代码设计规范
