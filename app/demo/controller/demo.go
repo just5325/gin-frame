@@ -6,13 +6,17 @@
 package controller
 
 import (
+	"encoding/json"
 	"gin-frame/app/demo/service"
 	"gin-frame/config"
+	"gin-frame/utility"
 	"gin-frame/utility/log"
 	"gin-frame/utility/response"
 	"gin-frame/utility/response/response_code"
+	"gin-frame/utility/token"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"time"
 )
 
@@ -58,5 +62,91 @@ func (c *demoController) Log(ctx *gin.Context) {
 		"a": 1,
 		"b": 2,
 	})
+	return
+}
+
+// UserPermission 用户权限
+type UserPermission struct {
+	// 权限key(不同的权限key需要保持唯一)
+	Permission string `json:"key"`
+	// 权限名称
+	Title string `json:"title"`
+}
+
+// TokenData 用户token缓存的数据接口
+type TokenData struct {
+	// 用户ID
+	Uid int `json:"uid"`
+	// 用户名
+	UserName string `json:"username"`
+	// 用户权限
+	Permissions []UserPermission `json:"permissions"`
+}
+
+// Token 获取token
+func (c *demoController) Token(ctx *gin.Context) {
+	// 模拟登录接口, 登录成功后查询出来的用户权限
+	permissions := make([]UserPermission, 0)
+	permissions = append(permissions, UserPermission{Permission: "order/info", Title: "查看订单"})
+	permissions = append(permissions, UserPermission{Permission: "order/create", Title: "创建订单"})
+	permissions = append(permissions, UserPermission{Permission: "order/edit", Title: "编辑订单"})
+	// 用户token缓存的数据接口
+	tokenData := TokenData{
+		Uid:         1,
+		UserName:    "黄翠刚",
+		Permissions: permissions,
+	}
+	// redis 中只能存json字符串, 所以这里把token缓存的数据转换成json字符串
+	tokenDataByte, err := json.Marshal(tokenData)
+	if err != nil {
+		return
+	}
+	// 获取新的token
+	res, err := token.GetInstance(ctx).NewToken(token.Options{Id: tokenData.Uid, Type: "admin:pc", TokenData: string(tokenDataByte)})
+	if err != nil {
+		response.Response(ctx).Json(response_code.Error.Code, err.Error(), nil)
+		return
+	}
+	response.Response(ctx).SusJson(gin.H{
+		"token": res,
+	})
+	return
+}
+
+// 为路由 /api/v1/demo/demo/parseToken 设置的接口参数结构体
+type demoParseToken struct {
+	Token string `json:"token"`
+}
+
+// ParseToken 解析token
+func (c *demoController) ParseToken(ctx *gin.Context) {
+	// 获取绑定接口请求参数
+	var data demoParseToken
+	utility.Common().ShouldBind(ctx, &data)
+
+	// 解析token
+	tokenDataString, err := token.GetInstance(ctx).ParseToken(data.Token)
+	if err != nil {
+		response.Response(ctx).Json(response_code.TokenInvalid.Code, response_code.TokenInvalid.Message, nil)
+		return
+	}
+
+	var responseData interface{}
+
+	// 判断token中存储的数据是否为有效的json格式字符串
+	jsonBlob := []byte(cast.ToString(tokenDataString))
+	if json.Valid(jsonBlob) {
+		var tokenData TokenData
+		err = json.Unmarshal(jsonBlob, &tokenData)
+		if err != nil {
+			response.Response(ctx).Json(response_code.Error.Code, err.Error(), nil)
+			return
+		}
+		responseData = tokenData
+	} else {
+		responseData = tokenDataString
+	}
+
+	response.Response(ctx).SusJson(responseData)
 	return
 }

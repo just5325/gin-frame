@@ -15,4 +15,8 @@ func demoRouter(group *gin.RouterGroup) {
 	group.POST("/demo/config", controller.Demo.Config)
 	// 记录日志
 	group.POST("/demo/log", controller.Demo.Log)
+	// 获取token
+	group.POST("/demo/token", controller.Demo.Token)
+	// 解析token
+	group.POST("/demo/parseToken", controller.Demo.ParseToken)
 }

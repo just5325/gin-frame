@@ -10,6 +10,7 @@ type code struct {
 }
 
 var (
-	Ok    = code{200, "请求成功！"}
-	Error = code{-1, "请求失败！"}
+	Ok           = code{200, "请求成功！"}
+	Error        = code{-1, "请求失败！"}
+	TokenInvalid = code{400, "TOKEN无效！"}
 )

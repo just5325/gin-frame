@@ -4,6 +4,11 @@
     # 端口
     "port": "8080"
 
+# token 相关配置
+token:
+    # 有效期(单位天, 默认30天)
+    expire: 1
+
 # 日志配置
 log:
     # 日志文件的软链接路径(程序根目录的相对路径,默认配置:"resource/logs/log.log")
