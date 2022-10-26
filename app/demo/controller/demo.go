@@ -51,14 +51,14 @@ func (c *demoController) Shutdown(ctx *gin.Context) {
 // 简单的读取一个配置文件即可
 func (c *demoController) Config(ctx *gin.Context) {
 	// 返回数据
-	response.Response(ctx).SusJson(config.Config().GetViper().AllSettings())
+	response.Response(ctx).SusJson(config.GetInstance().GetViper().AllSettings())
 	return
 }
 
 // Log 记录日志
 func (c *demoController) Log(ctx *gin.Context) {
 	// 仅仅演示一下怎么记录日志而已
-	log.Logger().Log(ctx, logrus.Fields{
+	log.GetInstance().Log(ctx, logrus.Fields{
 		"a": 1,
 		"b": 2,
 	})
@@ -92,7 +92,7 @@ func (c *demoController) Token(ctx *gin.Context) {
 	permissions = append(permissions, UserPermission{Permission: "order/edit", Title: "编辑订单"})
 	// 用户token缓存的数据接口
 	tokenData := TokenData{
-		Uid:         1,
+		Uid:         3,
 		UserName:    "黄翠刚",
 		Permissions: permissions,
 	}
@@ -102,7 +102,7 @@ func (c *demoController) Token(ctx *gin.Context) {
 		return
 	}
 	// 获取新的token
-	res, err := token.GetInstance(ctx).NewToken(token.Options{Id: tokenData.Uid, Type: "admin:pc", TokenData: string(tokenDataByte)})
+	res, err := token.GetInstance(ctx).NewToken(token.Options{Id: tokenData.Uid, Type: "admin:wap", TokenData: string(tokenDataByte)})
 	if err != nil {
 		response.Response(ctx).Json(response_code.Error.Code, err.Error(), nil)
 		return

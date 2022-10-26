@@ -16,9 +16,15 @@ func httpServer(httpServerStop chan error, mainStop chan<- error) {
 	// 实例化路由
 	r := router.InitRouter()
 
+	// http服务端口
+	port := "8080"
+	if len(config.GetInstance().GetViper().GetString("http_server.port")) > 0 {
+		port = config.GetInstance().GetViper().GetString("http_server.port")
+	}
+
 	// 定义http.Server
 	s := &http.Server{
-		Addr:    ":" + config.Config().GetViper().GetString("http_server.port"),
+		Addr:    ":" + port,
 		Handler: r,
 	}
 

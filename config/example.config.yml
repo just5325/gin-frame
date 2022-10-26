@@ -1,7 +1,7 @@
 # 配置文件示例
 # http_server 相关配置
 "http_server":
-    # 端口
+    # 端口(默认:8080)
     "port": "8080"
 
 # token 相关配置
@@ -15,9 +15,9 @@ log:
     link_path: "resource/logs/log.log"
     # 日志切割生成的日志文件路径(程序根目录的相对路径,默认配置:"resource/logs/log/%Y%m%d%H.log")
     file_path: "resource/logs/log/%Y%m%d%H.log"
-    # 日志文件最大保存天数(默认配置:30)
+    # 日志文件最大保存时间(单位天,默认配置:30)
     with_max_age: 30
-    # 日志切割时间间隔(默认配置:1)
+    # 日志切割时间间隔(单位小时,默认配置:1)
     with_rotation_time: 1
 
 # redis 配置
@@ -83,7 +83,7 @@ gorm_gen:
             database: "default"
             # table 表名称
             table: ["user", "user2", "user3"]
-            # gorm_gen_config 本配置项可覆盖 gorm_gen.gorm_gen_config 的配置(主要是为了可以配置不同的应用模块生成 gorm 模型到应用模块的目录下)
+            # gorm_gen_config (默认为 gorm_gen.gorm_gen_config 的配置, 本配置项可覆盖 gorm_gen.gorm_gen_config 的配置,主要是为了可以配置不同的应用模块生成 gorm 模型到应用模块的目录下)
             gorm_gen_config:
                 out_path: "app/demo/dao/query"
                 model_pkg_path: "app/demo/dao/model"

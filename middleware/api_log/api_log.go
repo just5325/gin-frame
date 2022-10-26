@@ -3,7 +3,7 @@
 // 创建人： 黄翠刚
 // 创建时间： 2022.10.10
 
-package middleware
+package api_log
 
 import (
 	"bytes"
@@ -14,16 +14,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// IApiLog 声明接口类型
-type IApiLog interface {
-	Handler(ctx *gin.Context)
-}
-
 // 声明结构体类型
 type apiLogImpl struct{}
 
-// ApiLog 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
-func ApiLog() IApiLog {
+// GetInstance 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
+func GetInstance() *apiLogImpl {
 	return &apiLogImpl{}
 }
 
@@ -55,7 +50,7 @@ func (s *apiLogImpl) Handler(ctx *gin.Context) {
 	}
 
 	// 记录日志
-	log.Logger().Log(ctx, logrus.Fields{
+	log.GetInstance().Log(ctx, logrus.Fields{
 		// 请求url(不含域名)
 		"url": ctx.Request.URL.Path,
 		// 请求参数
@@ -63,20 +58,4 @@ func (s *apiLogImpl) Handler(ctx *gin.Context) {
 		// 返回参数
 		"response": response,
 	})
-}
-
-//customResponseWriter 定义一个新的customResponseWriter，通过组合方式持有一个gin.ResponseWriter和response body缓存
-type customResponseWriter struct {
-	gin.ResponseWriter
-	body *bytes.Buffer
-}
-
-func (w customResponseWriter) Write(b []byte) (int, error) {
-	w.body.Write(b)
-	return w.ResponseWriter.Write(b)
-}
-
-func (w customResponseWriter) WriteString(s string) (int, error) {
-	w.body.WriteString(s)
-	return w.ResponseWriter.WriteString(s)
 }

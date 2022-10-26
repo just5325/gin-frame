@@ -18,7 +18,7 @@ func Execute() {
 
 	// 等待mainStop写入错误信息, 未写入错误信息时阻塞主协程
 	if err := <-mainStop; err != nil {
-		log.Logger().GetLogger().Errorf("main err %+v", err)
+		log.GetInstance().GetLogger().Errorf("main err %+v", err)
 		close(httpServerStop)
 	}
 }

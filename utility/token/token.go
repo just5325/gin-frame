@@ -40,8 +40,8 @@ type tokenImpl struct {
 // 初始化
 func init() {
 	// 获取配置文件的 token 有效期
-	if config.Config().GetViper().GetInt("token.expire") > 0 {
-		tokenExpiration = time.Duration(config.Config().GetViper().GetInt("token.expire")) * 24 * time.Hour
+	if config.GetInstance().GetViper().GetInt("token.expire") > 0 {
+		tokenExpiration = time.Duration(config.GetInstance().GetViper().GetInt("token.expire")) * 24 * time.Hour
 	}
 }
 
@@ -67,20 +67,20 @@ func (s *tokenImpl) NewToken(options Options) (token string, err error) {
 	idKey := fmt.Sprintf("%v:%v", options.Type, options.Id)
 
 	// 通过 唯一ID缓存key 获取指向的 token
-	oldToken, err := redis.GetRedisClient().GetDel(s.ctx, idKey).Result()
+	oldToken, err := redis.GetInstance().GetDel(s.ctx, idKey).Result()
 	if err != nil && err != goRedis.Nil {
 		return
 	}
 	// 删除原有 token,使之失效
 	if len(oldToken) > 0 {
-		redis.GetRedisClient().Del(s.ctx, s.getRedisTokenKey(oldToken))
+		redis.GetInstance().Del(s.ctx, s.getRedisTokenKey(oldToken))
 	}
 
 	// 设置  唯一ID缓存key 指向新的 token
-	redis.GetRedisClient().Set(s.ctx, idKey, token, 0)
+	redis.GetInstance().Set(s.ctx, idKey, token, tokenExpiration)
 
 	// 设置 token 缓存的用户信息
-	err = redis.GetRedisClient().Set(s.ctx, s.getRedisTokenKey(token), options.TokenData, tokenExpiration).Err()
+	err = redis.GetInstance().Set(s.ctx, s.getRedisTokenKey(token), options.TokenData, tokenExpiration).Err()
 
 	return
 }
@@ -88,7 +88,7 @@ func (s *tokenImpl) NewToken(options Options) (token string, err error) {
 // ParseToken 解析token
 func (s *tokenImpl) ParseToken(token string) (tokenData interface{}, err error) {
 	// 获取 token 的缓存数据
-	tokenData, err = redis.GetRedisClient().Get(s.ctx, s.getRedisTokenKey(token)).Result()
+	tokenData, err = redis.GetInstance().Get(s.ctx, s.getRedisTokenKey(token)).Result()
 	if err == goRedis.Nil {
 		err = errors.New("token无效")
 	}

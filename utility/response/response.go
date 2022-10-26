@@ -5,19 +5,10 @@
 package response
 
 import (
-	"bytes"
 	"gin-frame/utility/response/response_code"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
-
-// IResponse 声明接口类型
-type IResponse interface {
-	Json(code int, msg string, data interface{})
-	SusJson(data interface{})
-	FailJson(data interface{})
-	ErrIsNil(err error)
-}
 
 // 声明结构体类型
 type responseImpl struct {
@@ -25,7 +16,7 @@ type responseImpl struct {
 }
 
 // Response 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
-func Response(ctx *gin.Context) IResponse {
+func Response(ctx *gin.Context) *responseImpl {
 	return &responseImpl{
 		ctx: ctx,
 	}
@@ -43,31 +34,4 @@ func (s *responseImpl) Json(code int, msg string, data interface{}) {
 // SusJson 成功返回json
 func (s *responseImpl) SusJson(data interface{}) {
 	s.Json(response_code.Ok.Code, response_code.Ok.Message, data)
-}
-
-// FailJson 失败返回json
-func (s *responseImpl) FailJson(data interface{}) {
-	s.Json(response_code.Error.Code, response_code.Error.Message, data)
-}
-
-// ErrIsNil 通用快捷检查err不为nil时返回json
-func (s *responseImpl) ErrIsNil(err error) {
-	if err != nil {
-		s.Json(response_code.Error.Code, err.Error(), nil)
-	}
-}
-
-type CustomResponseWriter struct {
-	gin.ResponseWriter
-	body *bytes.Buffer
-}
-
-func (w CustomResponseWriter) Write(b []byte) (int, error) {
-	w.body.Write(b)
-	return w.ResponseWriter.Write(b)
-}
-
-func (w CustomResponseWriter) WriteString(s string) (int, error) {
-	w.body.WriteString(s)
-	return w.ResponseWriter.WriteString(s)
 }

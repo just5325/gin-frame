@@ -16,21 +16,21 @@ type redisController struct{}
 // Example redis示例操作
 func (c *redisController) Example(ctx *gin.Context) {
 	// redis set
-	err := redis.GetRedisClient().Set(ctx, "key", "value", 0).Err()
+	err := redis.GetInstance().Set(ctx, "key", "value", 0).Err()
 	if err != nil {
 		response.Response(ctx).Json(response_code.Error.Code, err.Error(), nil)
 		return
 	}
 
 	// redis get
-	val, err := redis.GetRedisClient().Get(ctx, "key").Result()
+	val, err := redis.GetInstance().Get(ctx, "key").Result()
 	if err != nil {
 		response.Response(ctx).Json(response_code.Error.Code, err.Error(), nil)
 		return
 	}
 	utility.Common().FmtPrint(val)
 
-	val2, err := redis.GetRedisClient().Get(ctx, "key2").Result()
+	val2, err := redis.GetInstance().Get(ctx, "key2").Result()
 	if err == goRedis.Nil {
 		utility.Common().FmtPrint("key2 不存在")
 	} else if err != nil {

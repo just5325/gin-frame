@@ -3,7 +3,7 @@
 // 创建时间： 2022.10.19
 // 使用示例:
 // import utilityValidator "gin-frame/utility/validator"
-// utilityValidator.Validator(ctx).Struct(&data)
+// utilityValidator.GetInstance(ctx).Struct(&data)
 
 package validator
 
@@ -16,18 +16,13 @@ import (
 	"reflect"
 )
 
-// IValidator 声明接口类型
-type IValidator interface {
-	Struct(v interface{})
-}
-
 // 声明结构体类型
 type validatorImpl struct {
 	ctx *gin.Context
 }
 
-// Validator 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
-func Validator(ctx *gin.Context) IValidator {
+// GetInstance 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
+func GetInstance(ctx *gin.Context) *validatorImpl {
 	return &validatorImpl{
 		ctx: ctx,
 	}

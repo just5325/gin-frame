@@ -71,11 +71,11 @@ func init() {
 func getGormGenConfig(configPath string) gormGenConfigT {
 	gormGenConfig := gormGenConfigT{
 		// out_path 指定查询代码路径 (默认:"./query")
-		outPath: config.Config().GetViper().GetString(fmt.Sprintf("%s.out_path", configPath)),
+		outPath: config.GetInstance().GetViper().GetString(fmt.Sprintf("%s.out_path", configPath)),
 		// mode l_pkg_path 指定模型代码路径 (默认:"./model")
-		modelPkgPath: config.Config().GetViper().GetString(fmt.Sprintf("%s.model_pkg_path", configPath)),
+		modelPkgPath: config.GetInstance().GetViper().GetString(fmt.Sprintf("%s.model_pkg_path", configPath)),
 		// with_unit_test 为查询代码生成单元测试 (默认:false)
-		withUnitTest: config.Config().GetViper().GetBool(fmt.Sprintf("%s.with_unit_test", configPath)),
+		withUnitTest: config.GetInstance().GetViper().GetBool(fmt.Sprintf("%s.with_unit_test", configPath)),
 	}
 	// 判断是否有配置文件配置当前配置项(只要有一项不为空，则说明有配置文件配置当前配置项)
 	gormGenConfig.isSetConfig = gormGenConfig.outPath != "" || gormGenConfig.modelPkgPath != "" || gormGenConfig.withUnitTest != false
@@ -94,12 +94,12 @@ func getGormGenConfig(configPath string) gormGenConfigT {
 func initConfig() {
 	genModel := make([]genModelT, 0)
 	//var genModel = []genModelT
-	genModelToSlice := cast.ToSlice(config.Config().GetViper().Get("gorm_gen.gen_model"))
+	genModelToSlice := cast.ToSlice(config.GetInstance().GetViper().Get("gorm_gen.gen_model"))
 	for v := range genModelToSlice {
 		configPath := fmt.Sprintf("gorm_gen.gen_model.%d", v)
 		genModelItem := genModelT{
-			database:      config.Config().GetViper().GetString(fmt.Sprintf("%s.database", configPath)),
-			table:         config.Config().GetViper().GetStringSlice(fmt.Sprintf("%s.table", configPath)),
+			database:      config.GetInstance().GetViper().GetString(fmt.Sprintf("%s.database", configPath)),
+			table:         config.GetInstance().GetViper().GetStringSlice(fmt.Sprintf("%s.table", configPath)),
 			gormGenConfig: getGormGenConfig(fmt.Sprintf("%s.gorm_gen_config", configPath)),
 		}
 
@@ -108,7 +108,7 @@ func initConfig() {
 
 	// 获取生成模型的配置数组
 	gormGen = gormGenT{
-		start:         config.Config().GetViper().GetBool("gorm_gen.start"),
+		start:         config.GetInstance().GetViper().GetBool("gorm_gen.start"),
 		gormGenConfig: getGormGenConfig("gorm_gen.gorm_gen_config"),
 		genModel:      genModel,
 	}
@@ -118,7 +118,7 @@ func initConfig() {
 func execute(database string, table []string, newGeneratorConfig gen.Config) {
 	// 在项目中重用数据库连接或在这里创建一个连接
 	// 如果你想使用 GenerateModel/GenerateModelAs , UseDB是必要的，否则它会 panic
-	gormDb, err := db.Db().GetDb(database)
+	gormDb, err := db.GetInstance().GetDb(database)
 	if err != nil {
 		panic(err)
 	}

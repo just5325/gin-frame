@@ -9,18 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// IDemo 声明接口类型
-type IDemo interface {
-	HelloWorld() (string, error)
-}
-
 // 声明结构体类型
 type demoImpl struct {
 	ctx *gin.Context
 }
 
 // Demo 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
-func Demo(ctx *gin.Context) IDemo {
+func Demo(ctx *gin.Context) *demoImpl {
 	return &demoImpl{
 		ctx: ctx,
 	}

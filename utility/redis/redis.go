@@ -1,6 +1,6 @@
 // redis工具包
 // 基于github.com/go-redis/redis/v9
-// 使用方式:redis.GetRedisClient() 获取 *goRedis.Client,后续所有操作请直接参考github.com/go-redis/redis/v9
+// 使用方式:redis.GetInstance() 获取 *goRedis.Client,后续所有操作请直接参考github.com/go-redis/redis/v9
 // 设计模式: 单例模式
 // 创建人： 黄翠刚
 // 创建时间： 2022.10.25
@@ -33,17 +33,17 @@ type optionsT struct {
 }
 
 func initRedisClient() *goRedis.Client {
-	if config.Config().GetViper().GetString("redis.host") != "" {
-		options.host = config.Config().GetViper().GetString("redis.host")
+	if config.GetInstance().GetViper().GetString("redis.host") != "" {
+		options.host = config.GetInstance().GetViper().GetString("redis.host")
 	}
-	if config.Config().GetViper().GetInt("redis.port") != 0 {
-		options.port = config.Config().GetViper().GetInt("redis.port")
+	if config.GetInstance().GetViper().GetInt("redis.port") != 0 {
+		options.port = config.GetInstance().GetViper().GetInt("redis.port")
 	}
-	if config.Config().GetViper().GetString("redis.passwd") != "" {
-		options.passwd = config.Config().GetViper().GetString("redis.passwd")
+	if config.GetInstance().GetViper().GetString("redis.passwd") != "" {
+		options.passwd = config.GetInstance().GetViper().GetString("redis.passwd")
 	}
-	if config.Config().GetViper().GetInt("redis.db") != 0 {
-		options.db = config.Config().GetViper().GetInt("redis.db")
+	if config.GetInstance().GetViper().GetInt("redis.db") != 0 {
+		options.db = config.GetInstance().GetViper().GetInt("redis.db")
 	}
 
 	return goRedis.NewClient(&goRedis.Options{
@@ -53,8 +53,8 @@ func initRedisClient() *goRedis.Client {
 	})
 }
 
-// GetRedisClient 获取 *goRedis.Client
-func GetRedisClient() (redisClient *goRedis.Client) {
+// GetInstance 获取 *goRedis.Client
+func GetInstance() (redisClient *goRedis.Client) {
 	if redisClient != nil {
 		return
 	}

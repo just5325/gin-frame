@@ -1,7 +1,7 @@
 // 数据库连接实例
 // 说明：创建与数据库服务器的连接
 // 设计模式：简单工厂 + 单例模式
-// 使用示例: db.Db().GetDb("default")
+// 使用示例: db.GetInstance().GetDb("default")
 // 创建人： 黄翠刚
 // 创建时间： 2022.10.13
 
@@ -32,16 +32,11 @@ type dbConfig struct {
 	maxIdleConn int
 }
 
-// IDb 声明接口类型
-type IDb interface {
-	GetDb(dbName string) (*gorm.DB, error)
-}
-
 // 声明结构体类型
 type dbImpl struct{}
 
-// Db 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
-func Db() IDb {
+// GetInstance 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
+func GetInstance() *dbImpl {
 	return &dbImpl{}
 }
 
@@ -53,7 +48,7 @@ func (s *dbImpl) GetDb(dbName string) (*gorm.DB, error) {
 
 	// 获取数据库的配置信息
 	configPath := "database." + dbName
-	database := config.Config().GetViper().GetStringMap(configPath)
+	database := config.GetInstance().GetViper().GetStringMap(configPath)
 	if len(database) == 0 {
 		return nil, errors.New("缺少数据库配置信息:" + configPath)
 	}
@@ -71,13 +66,13 @@ func (s *dbImpl) GetDb(dbName string) (*gorm.DB, error) {
 	var once sync.Once
 	var initDBErr error
 	once.Do(func() {
-		dbMap[dbName], initDBErr = initDB(configData)
+		dbMap[dbName], initDBErr = s.initDB(configData)
 	})
 
 	return dbMap[dbName], initDBErr
 }
 
-func initDB(config dbConfig) (*gorm.DB, error) {
+func (s *dbImpl) initDB(config dbConfig) (*gorm.DB, error) {
 	// dsn := "root:123456@tcp(127.0.0.1:3306)/demo?charset=utf8&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", config.user, config.passwd, config.host, config.port, config.dbname)
 

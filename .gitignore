@@ -1,16 +1,22 @@
+# 本程序运行的pid
+/pid
 # IDEA的索引目录
-.idea/
+/.idea/
 # GIT本地仓库
-.git/
+/.git/
 # 编译后的二进制文件
-main
-main.exe
+/main
+/main.exe
 # air 热重载临时文件目录
-tmp/
+/tmp/
 # 日志
-resource/logs/
+/resource/logs/
 # 项目唯一的配置文件
-config/config.yml
+/config/config.yml
+# 项目发布上线的目录
+/release
+# 一些本地使用的脚本程序
+/scripts
 # gorm.io/gen 自动生成的 数据库模型 文件
 #dao/query/
 #dao/model/

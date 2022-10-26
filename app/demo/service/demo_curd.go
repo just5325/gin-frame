@@ -10,23 +10,13 @@ import (
 	"time"
 )
 
-// IDemoCurd 声明接口类型
-type IDemoCurd interface {
-	// Create 数据库create操作
-	Create(username string, password string) (res gin.H, err error)
-	// Update 数据库update操作
-	Update(username string, password string) (err error)
-	// CheckUsernameExist 判断指定用户名是否存在
-	CheckUsernameExist(username string) (res bool, err error)
-}
-
 // 声明结构体类型
 type demoCurdImpl struct {
 	ctx *gin.Context
 }
 
 // DemoCurd 声明一个方法，用于获取当前包主要结构体的对象，便于执行其方法
-func DemoCurd(ctx *gin.Context) IDemoCurd {
+func DemoCurd(ctx *gin.Context) *demoCurdImpl {
 	return &demoCurdImpl{
 		ctx: ctx,
 	}
@@ -44,7 +34,7 @@ func (s *demoCurdImpl) Create(username string, password string) (res gin.H, err 
 		return
 	}
 
-	defaultDb, err := db.Db().GetDb("default")
+	defaultDb, err := db.GetInstance().GetDb("default")
 	if err != nil {
 		return
 	}
@@ -94,7 +84,7 @@ func (s *demoCurdImpl) Update(username string, password string) (err error) {
 		return
 	}
 
-	defaultDb, err := db.Db().GetDb("default")
+	defaultDb, err := db.GetInstance().GetDb("default")
 	if err != nil {
 		return
 	}
@@ -112,7 +102,7 @@ func (s *demoCurdImpl) Update(username string, password string) (err error) {
 
 // CheckUsernameExist 判断指定用户名是否存在
 func (s *demoCurdImpl) CheckUsernameExist(username string) (res bool, err error) {
-	defaultDb, err := db.Db().GetDb("default")
+	defaultDb, err := db.GetInstance().GetDb("default")
 	if err != nil {
 		return
 	}

@@ -18,7 +18,7 @@ type DemoCurdValidatorCreate struct {
 // Create 为路由 /api/v1/demo/demo_curd/create 设置的接口参数验证方法
 func (c *demoCurdValidator) Create(ctx *gin.Context) {
 	var data DemoCurdValidatorCreate
-	utilityValidator.Validator(ctx).Struct(&data)
+	utilityValidator.GetInstance(ctx).Struct(&data)
 	return
 }
 
@@ -31,6 +31,6 @@ type DemoCurdValidatorUpdate struct {
 // Update 为路由 /api/v1/demo/demo_curd/update 设置的接口参数验证方法
 func (c *demoCurdValidator) Update(ctx *gin.Context) {
 	var data DemoCurdValidatorUpdate
-	utilityValidator.Validator(ctx).Struct(&data)
+	utilityValidator.GetInstance(ctx).Struct(&data)
 	return
 }
