@@ -2,7 +2,6 @@ package log
 
 import (
 	"bufio"
-	"fmt"
 	"gin-frame/config"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/rifflock/lfshook"
@@ -27,20 +26,6 @@ var withMaxAge = 30
 
 // 默认日志切割时间间隔(单位小时)(隔多久分割一次)
 var withRotationTime = 1
-
-// MyWriter 实现 logger 的interface{}
-type MyWriter struct {
-	mlog *logrus.Logger
-}
-
-func (m *MyWriter) Printf(format string, v ...interface{}) {
-	logStr := fmt.Sprintf(format, v...)
-	m.mlog.Info(logStr)
-}
-
-func NewMyWriter() *MyWriter {
-	return &MyWriter{mlog: logger}
-}
 
 // 包初始化
 func init() {

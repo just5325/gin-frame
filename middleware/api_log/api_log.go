@@ -50,7 +50,7 @@ func (s *apiLogImpl) Handler(ctx *gin.Context) {
 	}
 
 	// 记录日志
-	log.GetInstance().Log(ctx, logrus.Fields{
+	log.GetInstance().Log(ctx, "api请求日志", logrus.Fields{
 		// 请求url(不含域名)
 		"url": ctx.Request.URL.Path,
 		// 请求参数

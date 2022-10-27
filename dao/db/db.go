@@ -77,7 +77,7 @@ func (s *dbImpl) initDB(config dbConfig) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", config.user, config.passwd, config.host, config.port, config.dbname)
 
 	myLogger := logger.New(
-		log.NewMyWriter(),
+		log.GetInstance(),
 		logger.Config{
 			SlowThreshold:             200 * time.Millisecond, // 慢SQL阈值
 			LogLevel:                  logger.Info,            // 设置日志级别，只有Info以上才会打印sql

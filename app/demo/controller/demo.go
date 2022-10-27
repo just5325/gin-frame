@@ -58,7 +58,7 @@ func (c *demoController) Config(ctx *gin.Context) {
 // Log 记录日志
 func (c *demoController) Log(ctx *gin.Context) {
 	// 仅仅演示一下怎么记录日志而已
-	log.GetInstance().Log(ctx, logrus.Fields{
+	log.GetInstance().Log(ctx, "仅仅演示一下怎么记录日志而已", logrus.Fields{
 		"a": 1,
 		"b": 2,
 	})
