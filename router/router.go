@@ -2,6 +2,7 @@ package router
 
 import (
 	"gin-frame/middleware/api_log"
+	"gin-frame/middleware/custom_recovery"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 )
@@ -16,8 +17,8 @@ func InitRouter() (r *gin.Engine) {
 	// By default gin.DefaultWriter = os.Stdout
 	r.Use(gin.Logger())
 
-	// Recovery 中间件会 recover 任何 panic。如果有 panic 的话，会写入 500。
-	r.Use(gin.Recovery())
+	// CustomRecovery 中间件会 recover 任何 panic。如果有 panic 的话，会记录日志并返回API接口友好报错信息。
+	r.Use(gin.CustomRecovery(custom_recovery.CustomRecovery))
 
 	// Gin框架的请求ID中间件。使用X-Request-ID报头向响应添加标识符。如果X-Request-ID值在请求头中发送，则将其传递回调用方
 	r.Use(requestid.New())

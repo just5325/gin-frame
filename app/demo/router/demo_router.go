@@ -19,4 +19,6 @@ func demoRouter(group *gin.RouterGroup) {
 	group.POST("/demo/token", controller.Demo.Token)
 	// 解析token
 	group.POST("/demo/parseToken", controller.Demo.ParseToken)
+	// 模拟接口中发生panic的表现
+	group.POST("/demo/recovery", controller.Demo.Recovery)
 }

@@ -15,6 +15,7 @@ import (
 	"gin-frame/utility/response/response_code"
 	"gin-frame/utility/token"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"time"
@@ -58,7 +59,7 @@ func (c *demoController) Config(ctx *gin.Context) {
 // Log 记录日志
 func (c *demoController) Log(ctx *gin.Context) {
 	// 仅仅演示一下怎么记录日志而已
-	log.GetInstance().Log(ctx, "仅仅演示一下怎么记录日志而已", logrus.Fields{
+	log.GetInstance().Log(ctx, log.LogType{Msg: "仅仅演示一下怎么记录日志而已"}, logrus.Fields{
 		"a": 1,
 		"b": 2,
 	})
@@ -148,5 +149,12 @@ func (c *demoController) ParseToken(ctx *gin.Context) {
 	}
 
 	response.Response(ctx).SusJson(responseData)
+	return
+}
+
+// Recovery 模拟接口中发生panic的表现
+func (c *demoController) Recovery(_ *gin.Context) {
+	err := errors.New("模拟接口中发生panic的表现")
+	panic(err)
 	return
 }
