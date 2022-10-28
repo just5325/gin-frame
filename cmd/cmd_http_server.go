@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -54,7 +55,7 @@ func httpServer(httpServerStop chan error, mainStop chan<- error) {
 func systemQuit(httpServerStop chan error) {
 	// 创建一个通道,监听系统中断信号
 	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGQUIT)
 	go func() {
 		// 接收quit，没有数据，或者没有close的话会一直堵塞在这里
 		<-quit
